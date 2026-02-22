@@ -1,0 +1,16 @@
+*.aux
+*.bbl
+*.bcf
+*.log
+*.out
+*.xml
+*.gz
+*.toc
+*.blg
+*.docx
+.ipynb_checkpoints
+.DS_Store
+.DS_Store?
+__pycache__/
+LaTeX Files/
+Presentations/
