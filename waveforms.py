@@ -80,7 +80,7 @@ class CircularBinary:
         #t = 0 corresponds to the coalescence time
         offset = -len(t)*delta_t
         h_quadPlus2B = TimeSeries(h_quadPlus2B, delta_t = delta_t, epoch = offset)
-        h_quadPlus2B = TimeSeries(h_quadPlus2B, delta_t = delta_t, epoch = offset)
+        h_quadCross2B = TimeSeries(h_quadCross2B, delta_t = delta_t, epoch = offset)
         
         if ampOnly == True:
             if pol == "plus":
@@ -222,7 +222,7 @@ class CircularLagrangeTriple:
         #t = 0 corresponds to the coalescence time
         offset = -len(t)*delta_t
         h_quadPlus3B = TimeSeries(h_quadPlus3B, delta_t = delta_t, epoch = offset)
-        h_quadPlus3B = TimeSeries(h_quadPlus3B, delta_t = delta_t, epoch = offset)
+        h_quadCross3B = TimeSeries(h_quadCross3B, delta_t = delta_t, epoch = offset)
         
         if ampOnly == True:
             if pol == "plus":
@@ -272,11 +272,11 @@ class CircularLagrangeTriple:
         
         if ampOnly == True:
             if pol == "plus":
-                return np.abs(scalePlus3B*amp_quadPlus3B)
+                return np.array([np.abs(scalePlus3B*amp_octcqPlus_omega3B), np.abs(scalePlus3B*amp_octcqPlus_3omega3B)])
             elif pol == "cross":
-                return np.abs(scaleCross3B*amp_quadCross3B)
+                return np.array([np.abs(scaleCross3B*amp_octcqCross_omega3B), np.abs(scaleCross3B*amp_octcqCross_3omega3B)])
             else:
-                return np.array([np.abs(scalePlus3B*amp_quadPlus3B), np.abs(scaleCross3B*amp_quadCross3B)])
+                return np.array([np.abs(scalePlus3B*amp_octcqPlus_omega3B), np.abs(scalePlus3B*amp_octcqPlus_3omega3B), np.abs(scaleCross3B*amp_octcqCross_omega3B), np.abs(scaleCross3B*amp_octcqCross_3omega3B)])
         else:
             if pol == "plus":
                 return h_octcqPlus3B
@@ -319,15 +319,16 @@ def plot_waveform_time(params_2B, params_3B, t_max, delta_t, radRxn = True, pol 
 
     #create figure object and subfigure object
     fig, (a0, a1, a2) = plt.subplots(nrows = 3, ncols = 1, sharex = True, gridspec_kw={'height_ratios': [1, 1, 2]}, figsize = figsize)
-    
-    if pol:
+
+    #plot the mass quadrupole and 0.5PN waveform
+    if pol == "plus":
         a0.plot(lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
                     lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
                     ls = "solid", color = "blue")
         a0.plot(binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
                     binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
                     ls = "dashed", color = "orange")
-        a0.set_ylabel("$h^{+}_{\mathrm{quad}}$", fontsize = "x-large")
+        a0.set_ylabel(r"$h^{+}_{\mathrm{quad}}$", fontsize = "x-large")
 
         a1.plot(lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
                     lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
@@ -335,7 +336,7 @@ def plot_waveform_time(params_2B, params_3B, t_max, delta_t, radRxn = True, pol 
         a1.plot(binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
                     binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
                     ls = "dashed", color = "orange")
-        a1.set_ylabel("$h^{+}_{\mathrm{oct+cq}}$", fontsize = "x-large")
+        a1.set_ylabel(r"$h^{+}_{\mathrm{oct+cq}}$", fontsize = "x-large")
     elif pol == "cross":
         a0.plot(lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
                     lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
@@ -343,7 +344,7 @@ def plot_waveform_time(params_2B, params_3B, t_max, delta_t, radRxn = True, pol 
         a0.plot(binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
                     binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
                     ls = "dashed", color = "orange")
-        a0.set_ylabel("$h^{+}_{\mathrm{quad}}$", fontsize = "x-large")
+        a0.set_ylabel(r"$h^{\times}_{\mathrm{quad}}$", fontsize = "x-large")
 
         a1.plot(lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
                     lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
@@ -351,15 +352,17 @@ def plot_waveform_time(params_2B, params_3B, t_max, delta_t, radRxn = True, pol 
         a1.plot(binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
                     binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
                     ls = "dashed", color = "orange")
-        a1.set_ylabel("$h^{+}_{\mathrm{oct+cq}}$", fontsize = "x-large")
-        
-    if pol:
+        a1.set_ylabel(r"$h^{\times}_{\mathrm{oct+cq}}$", fontsize = "x-large")
+
+    #plot the combined waveform
+    if pol == "plus":
         a2.plot(h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0].sample_times,
                  h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0],
                  ls = "solid", color = "blue", label = label_3B)
         a2.plot(h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0].sample_times,
                  h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0],
                  ls = "dashed", color = "orange", label = label_2B)
+        a2.set_ylabel(r"$h^{+}$", fontsize = "x-large")
     elif pol == "cross":
         a2.plot(h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1].sample_times,
                  h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1],
@@ -367,14 +370,94 @@ def plot_waveform_time(params_2B, params_3B, t_max, delta_t, radRxn = True, pol 
         a2.plot(h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1].sample_times,
                  h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1],
                  ls = "dashed", color = "orange", label = label_2B)
+        a2.set_ylabel(r"$h^{\times}$", fontsize = "x-large")
     
     a2.set_xlabel("Time, $t$ [s]", fontsize = "x-large")
-    a2.set_ylabel(r"$h^{+}$", fontsize = "x-large")
 
     if size == "vertical":
         a2.legend(bbox_to_anchor = (0.2, -0.16))
     else:
         a2.legend(bbox_to_anchor = (0.14, -0.16))
+
+    if not filename:
+        pass
+    else:
+        plt.savefig(filename, bbox_inches = "tight")
+
+    print("Binary Parameters:\nl = {}, m1 = {}, m2 = {}, r = {}, i = {}, phi = {}".format(*params_2B))
+    print("")
+    print("Lagrange Three-Body Parameters:\nl = {}, m1 = {}, m2 = {}, m3 = {}, r = {}, i = {}, phi = {}".format(*params_3B))
+
+    return fig
+
+#plot the waveforms in the time domain
+def plot_waveform_time_combined(params_2B, params_3B, t_max, delta_t, radRxn = True, filename = ""):
+    #initialization
+    binary = CircularBinary(*params_2B)
+    lagrange = CircularLagrangeTriple(*params_3B)
+
+    label_2B = "Binary"
+    label_3B = "Lagrange"
+
+    figsize = (15, 6)
+
+    #create figure object and subfigure object
+    fig, ((a1_p, a1_c), (a2_p, a2_c), (a3_p, a3_c)) = plt.subplots(nrows = 3, ncols = 2, gridspec_kw = {'height_ratios': [1, 1, 2], 'width_ratios': [1, 1]}, sharex = True, figsize = figsize)
+
+    #plot the mass quadrupole waveforms
+    a1_p.plot(lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
+                    lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
+                    ls = "solid", color = "blue")
+    a1_p.plot(binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
+                    binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
+                    ls = "dashed", color = "orange")
+    a1_p.set_ylabel(r"$h^{+}_{\mathrm{quad}}$", fontsize = "x-large")
+    a1_c.plot(lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
+                    lagrange.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
+                    ls = "solid", color = "blue")
+    a1_c.plot(binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
+                    binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
+                    ls = "dashed", color = "orange")
+    a1_c.set_ylabel(r"$h^{+}_{\mathrm{quad}}$", fontsize = "x-large")
+
+    #plot the 0.5PN waveforms
+    a2_p.plot(lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
+                    lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
+                    ls = "solid", color = "blue")
+    a2_p.plot(binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
+                    binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus"),
+                    ls = "dashed", color = "orange")
+    a2_p.set_ylabel(r"$h^{+}_{\mathrm{oct+cq}}$", fontsize = "x-large")
+    a2_c.plot(lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
+                    lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
+                    ls = "solid", color = "blue")
+    a2_c.plot(binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
+                    binary.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
+                    ls = "dashed", color = "orange")
+    a2_c.set_ylabel(r"$h^{\times}_{\mathrm{oct+cq}}$", fontsize = "x-large")
+
+    #plot the combined waveform
+    a3_p.plot(h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0].sample_times,
+                 h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0],
+                 ls = "solid", color = "blue", label = label_3B)
+    a3_p.plot(h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0].sample_times,
+                 h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[0],
+                 ls = "dashed", color = "orange", label = label_2B)
+    a3_p.set_ylabel(r"$h^{+}$", fontsize = "x-large")
+    a3_c.plot(h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1].sample_times,
+                 h_combined3B(*params_3B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1],
+                 ls = "solid", color = "blue", label = label_3B)
+    a3_c.plot(h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1].sample_times,
+                 h_combined2B(*params_2B, t_max = t_max, delta_t = delta_t, radRxn = radRxn)[1],
+                 ls = "dashed", color = "orange", label = label_2B)
+    a3_c.set_ylabel(r"$h^{\times}$", fontsize = "x-large")
+
+    a3_p.set_xlabel("Time, $t$ [s]", fontsize = "x-large")
+    a3_c.set_xlabel("Time, $t$ [s]", fontsize = "x-large")
+
+    a3_p.legend(bbox_to_anchor = (0.15, -0.16))
+    a3_p.legend(bbox_to_anchor = (0.15, -0.16))
+    plt.tight_layout()
 
     if not filename:
         pass
