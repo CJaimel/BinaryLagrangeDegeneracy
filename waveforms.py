@@ -374,6 +374,14 @@ def plot_waveform_time(params_2B, params_3B, t_max, delta_t, radRxn = True, pol 
     
     a2.set_xlabel("Time, $t$ [s]", fontsize = "x-large")
 
+    #gridlines
+    a0.grid()
+    a0.set_axisbelow(True)
+    a1.grid()
+    a1.set_axisbelow(True)
+    a2.grid()
+    a2.set_axisbelow(True)
+    
     if size == "vertical":
         a2.legend(bbox_to_anchor = (0.2, -0.16))
     else:
@@ -418,7 +426,7 @@ def plot_waveform_time_combined(params_2B, params_3B, t_max, delta_t, radRxn = T
     a1_c.plot(binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross").sample_times,
                     binary.h_quad(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "cross"),
                     ls = "dashed", color = "orange")
-    a1_c.set_ylabel(r"$h^{+}_{\mathrm{quad}}$", fontsize = "x-large")
+    a1_c.set_ylabel(r"$h^{\times}_{\mathrm{quad}}$", fontsize = "x-large")
 
     #plot the 0.5PN waveforms
     a2_p.plot(lagrange.h_octcq(t_max = t_max, delta_t = delta_t, radRxn = radRxn, pol = "plus").sample_times,
@@ -458,6 +466,21 @@ def plot_waveform_time_combined(params_2B, params_3B, t_max, delta_t, radRxn = T
     a3_p.legend(bbox_to_anchor = (0.15, -0.16))
     a3_p.legend(bbox_to_anchor = (0.15, -0.16))
     plt.tight_layout()
+
+    #gridlines
+    a1_p.grid()
+    a1_p.set_axisbelow(True)
+    a2_p.grid()
+    a2_p.set_axisbelow(True)
+    a3_p.grid()
+    a3_p.set_axisbelow(True)
+    
+    a1_c.grid()
+    a1_c.set_axisbelow(True)
+    a2_c.grid()
+    a2_c.set_axisbelow(True)
+    a3_c.grid()
+    a3_c.set_axisbelow(True)
 
     if not filename:
         pass
