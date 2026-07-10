@@ -43,6 +43,9 @@ class CircularBinary:
         #coalescence time in [s]
         self.t_c = ((const.c**5)/(const.G**3))*(5/256)*(l**4)/((self.M_c**(5/3))*(self.M**(4/3)))
 
+        #starting frequency in [Hz]
+        self.f_0 = (1/(2*np.pi))*np.sqrt(const.G*self.M/(self.l**3))
+
     #time evolution of the separation distance
     def a(self, t):
         return l*(1 - t/self.t_c)**(1/4)

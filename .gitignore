@@ -8,9 +8,12 @@
 *.toc
 *.blg
 *.docx
+*.pdf
 .ipynb_checkpoints
 .DS_Store
 .DS_Store?
 __pycache__/
+Animations/
 LaTeX Files/
+Poster/
 Presentations/
